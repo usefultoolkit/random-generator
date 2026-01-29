@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Random Name Picker & Wheel Spinner</title>
+  <meta name="description" content="Free random name picker and wheel spinner. Paste a list, shuffle, spin the wheel, and pick winners instantly." />
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel:#121b2f;
+      --panel2:#0f172a;
+      --text:#e7eefc;
+      --muted:#a9b7d4;
+      --line:rgba(255,255,255,.10);
+      --brand:#60a5fa;
+      --brand2:#22c55e;
+      --danger:#ef4444;
+      --warn:#f59e0b;
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --radius: 16px;
+      --radius2: 12px;
+      --max: 1100px;
+      color-scheme: dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      background: radial-gradient(1000px 500px at 20% 10%, rgba(96,165,250,.18), transparent 60%),
+                  radial-gradient(900px 600px at 80% 0%, rgba(34,197,94,.14), transparent 55%),
+                  radial-gradient(900px 600px at 50% 100%, rgba(245,158,11,.10), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+    }
+    a{ color: var(--brand); text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(11,18,32,.75);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      justify-content: space-between;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 220px;
+    }
+    .logo{
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: conic-gradient(from 180deg, #60a5fa, #22c55e, #f59e0b, #ef4444, #60a5fa);
+      box-shadow: 0 10px 25px rgba(0,0,0,.35);
+    }
+    .brand h1{
+      font-size: 14px;
+      margin:0;
+      letter-spacing: .2px;
+      line-height: 1.2;
+    }
+    .brand p{
+      margin:0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    nav{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .btn{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      padding: 9px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-size: 13px;
+      line-height: 1;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      transition: transform .06s ease, background .15s ease, border-color .15s ease;
+      user-select: none;
+    }
+    .btn:hover{ background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.18); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(96,165,250,.22), rgba(96,165,250,.10));
+      border-color: rgba(96,165,250,.35);
+    }
+    .btn.good{
+      background: linear-gradient(180deg, rgba(34,197,94,.22), rgba(34,197,94,.10));
+      border-color: rgba(34,197,94,.35);
+    }
+    .btn.danger{
+      background: linear-gradient(180deg, rgba(239,68,68,.18), rgba(239,68,68,.08));
+      border-color: rgba(239,68,68,.35);
+    }
+    .btn.small{ padding: 8px 10px; border-radius: 10px; }
+
+    main{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 18px 16px 40px;
+      display:grid;
+      grid-template-columns: 1.2fr .9fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px){
+      main{ grid-template-columns: 1fr; }
+      .brand{ min-width: unset; }
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card h2{
+      margin:0;
+      font-size: 14px;
+      letter-spacing: .2px;
+    }
+    .card .hd{
+      padding: 14px 14px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0,0,0,.12);
+    }
+    .card .bd{ padding: 14px; }
+    .muted{ color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .row{ display:flex; gap:10px; flex-wrap: wrap; align-items:center; }
+    .spacer{ flex: 1; }
+
+    textarea{
+      width:100%;
+      min-height: 260px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.20);
+      color: var(--text);
+      outline: none;
+      resize: vertical;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    textarea:focus{ border-color: rgba(96,165,250,.5); }
+
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .pill strong{ color: var(--text); font-weight: 600; }
+
+    .wheelWrap{
+      display:grid;
+      place-items:center;
+      padding: 16px 10px 18px;
+      gap: 12px;
+    }
+    canvas{
+      width: min(520px, 92vw);
+      height: min(520px, 92vw);
+      max-width: 520px;
+      max-height: 520px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.02);
+      box-shadow: 0 25px 70px rgba(0,0,0,.45);
+    }
+    .pointer{
+      width:0; height:0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 24px solid rgba(231,238,252,.95);
+      filter: drop-shadow(0 10px 12px rgba(0,0,0,.5));
+      margin-bottom: -8px;
+    }
+
+    .result{
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px dashed rgba(255,255,255,.18);
+      background: rgba(0,0,0,.22);
+    }
+    .result .label{ font-size: 12px; color: var(--muted); }
+    .result .value{ font-size: 18px; font-weight: 700; margin-top: 4px; word-break: break-word; }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 520px){
+      .grid2{ grid-template-columns: 1fr; }
+    }
+
+    label.chk{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      user-select:none;
+      font-size: 13px;
+      color: var(--text);
+    }
+    input[type="checkbox"]{
+      width: 18px;
+      height: 18px;
+      accent-color: var(--brand);
+    }
+
+    footer{
+      max-width: var(--max);
+      margin: 18px auto 0;
+      padding: 0 16px 26px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .links{ display:flex; gap:12px; flex-wrap: wrap; margin-top: 8px; }
+
+    /* simple modal */
+    dialog{
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #0b1220;
+      color: var(--text);
+      width: min(720px, 92vw);
+      box-shadow: var(--shadow);
+    }
+    dialog::backdrop{ background: rgba(0,0,0,.6); }
+    .modalHd{ display:flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px; border-bottom: 1px solid var(--line); }
+    .modalBd{ padding: 14px; }
+    .field{
+      width:100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      outline:none;
+      font-size: 13px;
+    }
+    .field:focus{ border-color: rgba(96,165,250,.5); }
+    .hint{ font-size: 12px; color: var(--muted); margin-top: 8px; }
+    code.k{ background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 8px; border:1px solid var(--line); }
+  </style>
+</head>
+<body>
+<header>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>Random Name Picker</h1>
+        <p>Free wheel spinner + instant picker</p>
+      </div>
+    </div>
+    <nav>
+      <button class="btn small" id="btnNew" title="Clear everything">New</button>
+      <button class="btn small" id="btnShuffle" title="Shuffle entries">Shuffle</button>
+      <button class="btn small" id="btnSort" title="Sort A→Z">Sort</button>
+      <button class="btn small" id="btnSave" title="Save on this device">Save</button>
+      <button class="btn small" id="btnLoad" title="Load from this device">Open</button>
+      <button class="btn small primary" id="btnShare" title="Create a share link">Share</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <div class="hd">
+      <h2>Wheel Spinner</h2>
+      <div class="row">
+        <span class="pill">Entries: <strong id="count">0</strong></span>
+        <span class="pill">Mode: <strong id="mode">Wheel</strong></span>
+      </div>
+    </div>
+
+    <div class="wheelWrap">
+      <div class="pointer" aria-hidden="true"></div>
+      <canvas id="wheel" width="900" height="900" aria-label="Wheel spinner"></canvas>
+
+      <div class="grid2" style="width:min(520px,92vw); max-width:520px;">
+        <button class="btn good" id="btnSpin">Spin</button>
+        <button class="btn" id="btnPick">Pick 1 (no spin)</button>
+      </div>
+
+      <div class="result" style="width:min(520px,92vw); max-width:520px;">
+        <div class="label">Result</div>
+        <div class="value" id="winner">—</div>
+        <div class="muted" id="subwinner" style="margin-top:6px;">Tip: press <code class="k">Ctrl</code> + <code class="k">Enter</code> to spin (desktop).</div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="card">
+    <div class="hd">
+      <h2>Entries</h2>
+      <div class="row">
+        <label class="chk" title="Remove the selected winner from the list after each spin/pick">
+          <input type="checkbox" id="removeWinner" />
+          Remove winner
+        </label>
+      </div>
+    </div>
+    <div class="bd">
+      <p class="muted" style="margin-top:0">
+        Paste one item per line. Example: names, tasks, prizes, numbers. Empty lines are ignored.
+      </p>
+
+      <textarea id="entries" spellcheck="false" placeholder="Ali&#10;Beatriz&#10;Charles&#10;Diya&#10;Eric&#10;Fatima&#10;Gabriel&#10;Hanna"></textarea>
+
+      <div class="row" style="margin-top: 12px;">
+        <button class="btn" id="btnDedup" title="Remove duplicate lines">De-duplicate</button>
+        <button class="btn danger" id="btnClear" title="Clear text">Clear</button>
+        <div class="spacer"></div>
+        <span class="pill">Saved locally: <strong id="savedState">No</strong></span>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--line); margin:14px 0;" />
+
+      <div class="muted">
+        <strong>Free + beginner friendly:</strong> This site runs entirely in your browser (no account). If you want “shareable links” that always load the same list for everyone, you usually add a backend later. For now, this page can share lists via the URL for convenience.
+      </div>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <div>
+    <strong>About</strong><br/>
+    This is a free random picker tool. For best results, add useful pages (classroom picker, raffle picker, team standup picker) and submit your site to Google Search Console.
+  </div>
+  <div class="links">
+    <a href="#" id="openPrivacy">Privacy</a>
+    <a href="#" id="openTerms">Terms</a>
+    <a href="#" id="openContact">Contact</a>
+  </div>
+  <div style="margin-top:10px;">
+    © <span id="year"></span> Random Name Picker
+  </div>
+</footer>
+
+<dialog id="modal">
+  <div class="modalHd">
+    <div style="font-weight:700" id="modalTitle">Info</div>
+    <button class="btn small" id="modalClose">Close</button>
+  </div>
+  <div class="modalBd" id="modalBody"></div>
+</dialog>
+
+<script>
+(() => {
+  const els = {
+    canvas: document.getElementById('wheel'),
+    entries: document.getElementById('entries'),
+    count: document.getElementById('count'),
+    mode: document.getElementById('mode'),
+    winner: document.getElementById('winner'),
+    subwinner: document.getElementById('subwinner'),
+    removeWinner: document.getElementById('removeWinner'),
+    savedState: document.getElementById('savedState'),
+    year: document.getElementById('year'),
+    modal: document.getElementById('modal'),
+    modalTitle: document.getElementById('modalTitle'),
+    modalBody: document.getElementById('modalBody'),
+    modalClose: document.getElementById('modalClose'),
+  };
+
+  const btn = {
+    new: document.getElementById('btnNew'),
+    shuffle: document.getElementById('btnShuffle'),
+    sort: document.getElementById('btnSort'),
+    save: document.getElementById('btnSave'),
+    load: document.getElementById('btnLoad'),
+    share: document.getElementById('btnShare'),
+    spin: document.getElementById('btnSpin'),
+    pick: document.getElementById('btnPick'),
+    dedup: document.getElementById('btnDedup'),
+    clear: document.getElementById('btnClear'),
+  };
+
+  // Footer links
+  document.getElementById('openPrivacy').addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal('Privacy', `
+      <p>This tool runs entirely in your browser. By default, it stores your entries only on your device (if you click Save).</p>
+      <p>If you add ads/analytics later, you must update this page to explain what data is collected.</p>
+    `);
+  });
+  document.getElementById('openTerms').addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal('Terms', `
+      <p>Use at your own risk. No guarantees about suitability for raffles, gambling, or regulated drawings.</p>
+      <p>If you plan to use this for giveaways, check your local laws and platform rules.</p>
+    `);
+  });
+  document.getElementById('openContact').addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal('Contact', `
+      <p>Add your contact email here (recommended for AdSense approval).</p>
+      <p><strong>Email:</strong> you@example.com</p>
+    `);
+  });
+
+  els.modalClose.addEventListener('click', () => els.modal.close());
+  function openModal(title, html){
+    els.modalTitle.textContent = title;
+    els.modalBody.innerHTML = html;
+    els.modal.showModal();
+  }
+
+  els.year.textContent = new Date().getFullYear();
+
+  const ctx = els.canvas.getContext('2d');
+  const state = {
+    entries: [],
+    rotation: 0,          // radians
+    spinning: false,
+    lastWinner: null,
+  };
+
+  const COLORS = ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#7c3aed', '#0891b2'];
+  const STORAGE_KEY = 'rng_site_v1';
+
+  // --- Helpers ---
+  function normalizeLines(text){
+    return text
+      .split(/\r?\n/)
+      .map(s => s.trim())
+      .filter(Boolean);
+  }
+  function setEntries(list){
+    state.entries = list.slice(0, 500); // simple limit to keep it fast
+    els.count.textContent = state.entries.length;
+    draw();
+  }
+  function updateTextareaFromState(){
+    els.entries.value = state.entries.join('\n');
+    els.count.textContent = state.entries.length;
+  }
+  function randomInt(n){ return Math.floor(Math.random() * n); }
+
+  // URL share: encode entries in URL hash (no backend).
+  function encodeForHash(list){
+    const json = JSON.stringify({v:1, e:list});
+    const b64 = btoa(unescape(encodeURIComponent(json)));
+    return b64.replaceAll('=','').replaceAll('+','-').replaceAll('/','_'); // url-safe
+  }
+  function decodeFromHash(hash){
+    const h = hash.replace(/^#/, '').trim();
+    if(!h) return null;
+    const b64 = h.replaceAll('-','+').replaceAll('_','/');
+    // pad
+    const pad = b64.length % 4 ? '='.repeat(4 - (b64.length % 4)) : '';
+    const json = decodeURIComponent(escape(atob(b64 + pad)));
+    const obj = JSON.parse(json);
+    if(!obj || obj.v !== 1 || !Array.isArray(obj.e)) return null;
+    return obj.e.map(x => String(x)).slice(0, 500);
+  }
+
+  function saveLocal(){
+    const payload = {
+      entries: state.entries,
+      removeWinner: !!els.removeWinner.checked
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    els.savedState.textContent = 'Yes';
+  }
+  function loadLocal(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return false;
+    try{
+      const obj = JSON.parse(raw);
+      if(Array.isArray(obj.entries)) setEntries(obj.entries);
+      els.removeWinner.checked = !!obj.removeWinner;
+      els.savedState.textContent = 'Yes';
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  function clearResult(){
+    els.winner.textContent = '—';
+    state.lastWinner = null;
+  }
+
+  // --- Wheel drawing ---
+  function draw(){
+    const W = els.canvas.width;
+    const H = els.canvas.height;
+    ctx.clearRect(0,0,W,H);
+
+    const n = state.entries.length;
+    const cx = W/2, cy = H/2;
+    const r = Math.min(W,H)*0.46;
+
+    // Background disc
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(state.rotation);
+
+    // rim shadow
+    ctx.beginPath();
+    ctx.arc(0,0,r+10,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,.25)';
+    ctx.fill();
+
+    if(n === 0){
+      ctx.beginPath();
+      ctx.arc(0,0,r,0,Math.PI*2);
+      ctx.fillStyle = 'rgba(255,255,255,.04)';
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(231,238,252,.85)';
+      ctx.font = '700 34px system-ui, -apple-system, Segoe UI, Roboto, Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Add entries →', 0, -10);
+
+      ctx.fillStyle = 'rgba(169,183,212,.9)';
+      ctx.font = '500 20px system-ui, -apple-system, Segoe UI, Roboto, Arial';
+      ctx.fillText('Then press Spin', 0, 30);
+
+      ctx.restore();
+      drawCenterCap(cx, cy, r);
+      return;
+    }
+
+    const slice = (Math.PI*2)/n;
+
+    for(let i=0;i<n;i++){
+      const a0 = i*slice;
+      const a1 = a0 + slice;
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.arc(0,0,r,a0,a1);
+      ctx.closePath();
+      ctx.fillStyle = COLORS[i % COLORS.length];
+      ctx.fill();
+
+      // separators
+      ctx.strokeStyle = 'rgba(255,255,255,.12)';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // label
+      const label = state.entries[i];
+      const mid = a0 + slice/2;
+      ctx.save();
+      ctx.rotate(mid);
+      ctx.translate(r*0.64, 0);
+      ctx.rotate(Math.PI/2);
+
+      ctx.fillStyle = 'rgba(255,255,255,.92)';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // auto size a bit
+      const max = 22;
+      const min = 12;
+      let fontSize = max;
+      ctx.font = `700 ${fontSize}px system-ui, -apple-system, Segoe UI, Roboto, Arial`;
+      while(fontSize > min && ctx.measureText(label).width > r*0.70){
+        fontSize -= 1;
+        ctx.font = `700 ${fontSize}px system-ui, -apple-system, Segoe UI, Roboto, Arial`;
+      }
+      ctx.fillText(label, 0, 0);
+      ctx.restore();
+    }
+
+    ctx.restore();
+    drawCenterCap(cx, cy, r);
+  }
+
+  function drawCenterCap(cx, cy, r){
+    // center cap
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.beginPath();
+    ctx.arc(0,0,r*0.18,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,.96)';
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(0,0,r*0.185,0,Math.PI*2);
+    ctx.strokeStyle = 'rgba(0,0,0,.18)';
+    ctx.lineWidth = 6;
+    ctx.stroke();
+    ctx.restore();
+
+    // pointer overlay (subtle)
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.beginPath();
+    ctx.arc(0,0,r+6, -Math.PI/2 - 0.02, -Math.PI/2 + 0.02);
+    ctx.strokeStyle = 'rgba(255,255,255,.25)';
+    ctx.lineWidth = 10;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function currentIndex(){
+    const n = state.entries.length;
+    if(n === 0) return -1;
+    const slice = (Math.PI*2)/n;
+    // Pointer at top (-PI/2). We rotated wheel by state.rotation.
+    // Convert pointer angle into wheel coordinates.
+    const angle = (-Math.PI/2 - state.rotation) % (Math.PI*2);
+    const a = (angle + Math.PI*2) % (Math.PI*2);
+    return Math.floor(a / slice) % n;
+  }
+
+  function pickWinner(){
+    const n = state.entries.length;
+    if(n === 0) return null;
+    const idx = currentIndex();
+    return { idx, value: state.entries[idx] };
+  }
+
+  function removeAt(idx){
+    state.entries.splice(idx,1);
+    updateTextareaFromState();
+    els.count.textContent = state.entries.length;
+    draw();
+  }
+
+  // --- Actions ---
+  function spin(){
+    if(state.spinning) return;
+    if(state.entries.length < 2){
+      els.winner.textContent = state.entries.length ? state.entries[0] : '—';
+      return;
+    }
+    state.spinning = true;
+    els.mode.textContent = 'Spinning…';
+    btn.spin.disabled = true;
+    btn.pick.disabled = true;
+
+    const start = performance.now();
+    const duration = 3200 + Math.random()*800;
+    const startRot = state.rotation;
+    const extraTurns = (Math.random()*3 + 5) * Math.PI*2; // 5–8 turns
+    const offset = Math.random() * Math.PI*2;
+    const target = startRot + extraTurns + offset;
+
+    function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
+
+    function frame(now){
+      const t = Math.min(1, (now - start)/duration);
+      const e = easeOutCubic(t);
+      state.rotation = startRot + (target - startRot)*e;
+      draw();
+
+      if(t < 1){
+        requestAnimationFrame(frame);
+      }else{
+        state.spinning = false;
+        btn.spin.disabled = false;
+        btn.pick.disabled = false;
+        els.mode.textContent = 'Wheel';
+
+        const w = pickWinner();
+        if(w){
+          state.lastWinner = w.value;
+          els.winner.textContent = w.value;
+          els.subwinner.textContent = `Selected item #${w.idx + 1} of ${state.entries.length}.`;
+
+          if(els.removeWinner.checked){
+            removeAt(w.idx);
+            els.subwinner.textContent += ' (Removed)';
+          }
+        }
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function pickNoSpin(){
+    if(state.spinning) return;
+    if(state.entries.length === 0){
+      els.winner.textContent = '—';
+      return;
+    }
+    // pick random index without relying on wheel rotation
+    const idx = randomInt(state.entries.length);
+    state.lastWinner = state.entries[idx];
+    els.winner.textContent = state.entries[idx];
+    els.subwinner.textContent = `Picked randomly (no spin). Item #${idx + 1} of ${state.entries.length}.`;
+
+    // rotate wheel so the picked entry lands at pointer (nice UX)
+    const n = state.entries.length;
+    const slice = (Math.PI*2)/n;
+    const mid = (idx + 0.5) * slice;
+    // want -PI/2 to point to that mid => rotation = -PI/2 - mid
+    state.rotation = -Math.PI/2 - mid;
+    draw();
+
+    if(els.removeWinner.checked){
+      removeAt(idx);
+      els.subwinner.textContent += ' (Removed)';
+    }
+  }
+
+  // --- Bind events ---
+  els.entries.addEventListener('input', () => {
+    setEntries(normalizeLines(els.entries.value));
+    els.savedState.textContent = 'No';
+    clearResult();
+  });
+
+  btn.spin.addEventListener('click', spin);
+  btn.pick.addEventListener('click', pickNoSpin);
+
+  btn.shuffle.addEventListener('click', () => {
+    const a = state.entries.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    setEntries(a);
+    updateTextareaFromState();
+    els.savedState.textContent = 'No';
+    clearResult();
+  });
+
+  btn.sort.addEventListener('click', () => {
+    const a = state.entries.slice().sort((x,y) => x.localeCompare(y));
+    setEntries(a);
+    updateTextareaFromState();
+    els.savedState.textContent = 'No';
+    clearResult();
+  });
+
+  btn.dedup.addEventListener('click', () => {
+    const seen = new Set();
+    const out = [];
+    for(const item of state.entries){
+      const key = item.toLowerCase();
+      if(seen.has(key)) continue;
+      seen.add(key);
+      out.push(item);
+    }
+    setEntries(out);
+    updateTextareaFromState();
+    els.savedState.textContent = 'No';
+    clearResult();
+  });
+
+  btn.clear.addEventListener('click', () => {
+    els.entries.value = '';
+    setEntries([]);
+    els.savedState.textContent = 'No';
+    clearResult();
+  });
+
+  btn.new.addEventListener('click', () => {
+    if(confirm('Clear entries and reset wheel?')){
+      location.hash = '';
+      els.removeWinner.checked = false;
+      localStorage.removeItem(STORAGE_KEY);
+      els.savedState.textContent = 'No';
+      els.entries.value = '';
+      setEntries([]);
+      clearResult();
+    }
+  });
+
+  btn.save.addEventListener('click', () => {
+    saveLocal();
+    openModal('Saved', '<p>Saved on this device (browser storage).</p>');
+  });
+
+  btn.load.addEventListener('click', () => {
+    const ok = loadLocal();
+    if(ok){
+      updateTextareaFromState();
+      draw();
+      openModal('Loaded', '<p>Loaded your saved entries from this device.</p>');
+    }else{
+      openModal('Nothing saved yet', '<p>No saved data found on this device. Paste entries and click <strong>Save</strong>.</p>');
+    }
+  });
+
+  btn.share.addEventListener('click', async () => {
+    if(state.entries.length === 0){
+      openModal('Share', '<p>Add entries first, then click Share.</p>');
+      return;
+    }
+    const hash = encodeForHash(state.entries);
+    const url = location.origin + location.pathname + '#' + hash;
+
+    try{
+      await navigator.clipboard.writeText(url);
+      openModal('Share link copied', `
+        <p>Anyone opening this link will see the same entries.</p>
+        <input class="field" value="${url.replaceAll('"','&quot;')}" readonly />
+        <p class="hint">Note: this “share” works by putting your list into the URL. For very large lists it can get too long; a backend fixes that later.</p>
+      `);
+    }catch(e){
+      openModal('Share link', `
+        <p>Copy this link:</p>
+        <input class="field" value="${url.replaceAll('"','&quot;')}" readonly />
+        <p class="hint">If copy doesn’t work, select the text and copy manually.</p>
+      `);
+    }
+  });
+
+  // Keyboard shortcut: Ctrl+Enter to spin
+  document.addEventListener('keydown', (e) => {
+    if((e.ctrlKey || e.metaKey) && e.key === 'Enter'){
+      spin();
+    }
+  });
+
+  // Load from URL hash (share links)
+  function loadFromHash(){
+    const list = decodeFromHash(location.hash);
+    if(list && list.length){
+      setEntries(list);
+      updateTextareaFromState();
+      els.savedState.textContent = 'No';
+      els.winner.textContent = '—';
+      els.subwinner.textContent = 'Loaded entries from shared link.';
+    }
+  }
+  window.addEventListener('hashchange', loadFromHash);
+
+  // Initial boot: hash > localStorage > default example
+  const fromHash = decodeFromHash(location.hash);
+  if(fromHash && fromHash.length){
+    setEntries(fromHash);
+    updateTextareaFromState();
+    els.subwinner.textContent = 'Loaded entries from shared link.';
+  } else if(loadLocal()){
+    updateTextareaFromState();
+  } else {
+    // default example list
+    const example = ['Ali','Beatriz','Charles','Diya','Eric','Fatima','Gabriel','Hanna'];
+    els.entries.value = example.join('\n');
+    setEntries(example);
+  }
+
+  draw();
+})();
+</script>
+</body>
+</html>
