@@ -475,12 +475,54 @@
   });
 
   // Footer links
-  document.getElementById('openPrivacy').addEventListener('click', (e) => {
-    e.preventDefault();
-    openModal('Privacy', `
-      <p>This tool runs entirely in your browser. By default, it stores your entries only on your device (if you click Save).</p>
-    `);
-  });
+document.getElementById('openPrivacy').addEventListener('click', (e) => {
+  e.preventDefault();
+  openModal('Privacy Policy', `
+    <div class="modal-content">
+      <h2>Privacy Policy</h2>
+      <p><strong>Last updated:</strong> 2026-01-30</p>
+
+      <p>This website (“Site”) provides a free online tool. We do not require you to create an account.</p>
+
+      <h3>Information We Collect</h3>
+      <ul>
+        <li><strong>Information you provide:</strong> If you type or paste text into the tool (e.g., a list of names), it is processed in your browser for the tool to function. We do not intentionally collect or store this content on a server.</li>
+        <li><strong>Automatic data:</strong> Like most websites, we and our partners may collect basic technical information (such as IP address, browser type, device information, pages visited, and approximate location) for security, analytics, and advertising.</li>
+      </ul>
+
+      <h3>Cookies &amp; Similar Technologies</h3>
+      <p>We use cookies and similar technologies to:</p>
+      <ul>
+        <li>enable essential site functions,</li>
+        <li>measure traffic and improve the Site, and</li>
+        <li>show advertisements.</li>
+      </ul>
+      <p>You can control cookies through your browser settings. Disabling cookies may affect site functionality and ad behavior.</p>
+
+      <h3>Advertising (Google AdSense)</h3>
+      <p>This Site may display ads served by Google AdSense and other advertising partners. These partners may use cookies and similar identifiers to:</p>
+      <ul>
+        <li>show ads,</li>
+        <li>measure ad performance, and</li>
+        <li>provide personalized ads based on your interests (where permitted).</li>
+      </ul>
+      <p>You can learn more and manage ad personalization here:</p>
+      <ul>
+        <li><a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer">Google Ads Settings</a></li>
+        <li><a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">How Google uses information from sites or apps</a></li>
+      </ul>
+
+      <h3>Third-Party Links</h3>
+      <p>The Site may contain links to third-party websites. We are not responsible for their content or privacy practices.</p>
+
+      <h3>Children’s Privacy</h3>
+      <p>This Site is not intended for children under 13, and we do not knowingly collect personal information from children.</p>
+
+      <h3>Changes to This Policy</h3>
+      <p>We may update this Privacy Policy from time to time. Updates will be posted on this page with a new “Last updated” date.</p>
+    </div>
+  `);
+});
   document.getElementById('openTerms').addEventListener('click', (e) => {
     e.preventDefault();
     openModal('Terms', `
