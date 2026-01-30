@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>My Useful Tools Online</title>
+  <meta name="description" content="Free, fast browser tools: random name picker, wheel spinner, and more." />
+
+  <link rel="canonical" href="https://www.my-useful-tools-online.com/" />
+  <meta name="robots" content="index,follow" />
+
+  <!-- theme-color will be updated by JS when user toggles theme -->
+  <meta name="theme-color" content="#f7f9ff" id="themeColorMeta" />
+
+  <style>
+    /* Light theme (default) */
+    :root{
+      --bg:#f7f9ff;
+      --card:rgba(255,255,255,.85);
+      --text:#0b1220;
+      --muted:#45506b;
+      --link:#1e4fd7;
+      --border:rgba(10,20,40,.14);
+      --shadow:0 12px 34px rgba(10,20,40,.12);
+
+      --pageRadial1: radial-gradient(1000px 700px at 15% 10%, rgba(84,132,255,.20) 0%, transparent 60%);
+      --pageRadial2: radial-gradient(900px 650px at 85% 20%, rgba(0,186,150,.14) 0%, transparent 60%);
+      --btnBg: rgba(10,20,40,.05);
+      --btnText: var(--text);
+      --btnPrimaryText: #06121f;
+    }
+
+    /* Dark blue theme (your current look) */
+    html[data-theme="dark"]{
+      --bg:#0b1220;
+      --card:rgba(15,27,51,.78);
+      --text:#e9efff;
+      --muted:#a7b3d6;
+      --link:#7aa2ff;
+      --border:rgba(255,255,255,.12);
+      --shadow:0 12px 34px rgba(0,0,0,.35);
+
+      --pageRadial1: radial-gradient(1000px 700px at 15% 10%, #182a56 0%, transparent 60%);
+      --pageRadial2: radial-gradient(900px 650px at 85% 20%, #1b3a6b 0%, transparent 60%);
+      --btnBg: rgba(255,255,255,.06);
+      --btnText: var(--text);
+      --btnPrimaryText: #06121f;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: var(--pageRadial1), var(--pageRadial2), var(--bg);
+      color:var(--text);
+      line-height:1.6;
+    }
+    a{color:var(--link); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .wrap{max-width:980px;margin:0 auto;padding:28px 18px 42px}
+
+    header{padding:10px 0 8px}
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .brand{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .logo{
+      width:44px;height:44px;border-radius:14px;flex:0 0 auto;
+      background: linear-gradient(135deg, #7aa2ff, #61ffd7);
+      box-shadow: var(--shadow);
+    }
+    h1{margin:0;font-size:28px;letter-spacing:.2px}
+    .tagline{margin:10px 0 0;color:var(--muted);max-width:72ch}
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:14px;
+      margin-top:18px;
+    }
+    .card{
+      grid-column:span 12;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    @media (min-width: 720px){
+      .card{grid-column:span 6}
+    }
+    .card h2{margin:0 0 8px;font-size:18px}
+    .card p{margin:0 0 12px;color:var(--muted)}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+
+    .btn{
+      display:inline-block;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:var(--btnBg);
+      color:var(--btnText);
+      font-weight:600;
+      cursor:pointer;
+    }
+    .btn.primary{
+      background:linear-gradient(135deg, rgba(122,162,255,.95), rgba(97,255,215,.75));
+      border:none;
+      color:var(--btnPrimaryText);
+    }
+
+    .wide{grid-column:span 12}
+    .small{font-size:14px;color:var(--muted)}
+    footer{
+      margin-top:28px;
+      padding-top:16px;
+      border-top:1px solid var(--border);
+      color:var(--muted);
+      font-size:14px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .links{display:flex;gap:14px;flex-wrap:wrap}
+    code{background:rgba(127,127,127,.14);padding:2px 6px;border-radius:8px}
+
+    /* Theme toggle button alignment */
+    .themeToggle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .pill{
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:14px;
+      white-space:nowrap;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>My Useful Tools Online</h1>
+            <p class="tagline">
+              Free tools that run in your browser. Simple, fast, and mobile-friendly.
+            </p>
+          </div>
+        </div>
+
+        <!-- Theme switch -->
+        <div class="themeToggle">
+          <button class="btn pill" id="btnTheme" type="button" aria-label="Toggle theme">
+            Theme: <span id="themeLabel">Light</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="grid" aria-label="Tool list">
+      <section class="card">
+        <h2>Random Name Picker &amp; Wheel Spinner</h2>
+        <p>Paste names, tasks, prizes, or numbers. Spin the wheel or pick instantly.</p>
+        <div class="btnrow">
+          <a class="btn primary" href="/random-generator/">Open tool</a>
+        </div>
+        <p class="small" style="margin-top:10px">
+          Shortcut: press <code>Ctrl</code> + <code>Enter</code> to spin (desktop).
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>More tools coming soon</h2>
+        <p>
+          Planned URLs:
+          <code>/superball-generator/</code> and <code>/marksix-generator/</code>.
+        </p>
+        <div class="btnrow">
+          <a class="btn" href="/contact.html">Suggest a tool</a>
+        </div>
+      </section>
+
+      <section class="card wide">
+        <h2>About this site</h2>
+        <p>
+          This website is a collection of small utilities. Some tools may store your settings locally in your browser.
+          See <a href="/privacy.html">Privacy</a> for details.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <div>© <span id="y"></span> My Useful Tools Online</div>
+      <nav class="links" aria-label="Footer">
+        <a href="/about.html">About</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </footer>
+  </div>
+
+  <script>
+    // year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // theme
+    const STORAGE_KEY = 'theme'; // 'light' | 'dark'
+    const themeLabel = document.getElementById('themeLabel');
+    const btnTheme = document.getElementById('btnTheme');
+    const themeMeta = document.getElementById('themeColorMeta');
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeLabel.textContent = 'Dark';
+        themeMeta.setAttribute('content', '#0b1220');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        themeLabel.textContent = 'Light';
+        themeMeta.setAttribute('content', '#f7f9ff');
+      }
+    }
+
+    // Default is light, but if user never chose, respect OS preference (optional)
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = saved || (prefersDark ? 'dark' : 'light');
+    applyTheme(initialTheme);
+
+    btnTheme.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const next = isDark ? 'light' : 'dark';
+      localStorage.setItem(STORAGE_KEY, next);
+      applyTheme(next);
+    });
+  </script>
+</body>
+</html>
