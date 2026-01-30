@@ -474,7 +474,7 @@
     draw();
   });
 
-  // Footer links
+// Footer links
 document.getElementById('openPrivacy').addEventListener('click', (e) => {
   e.preventDefault();
   openModal('Privacy Policy', `
@@ -523,12 +523,13 @@ document.getElementById('openPrivacy').addEventListener('click', (e) => {
     </div>
   `);
 });
-  document.getElementById('openTerms').addEventListener('click', (e) => {
-    e.preventDefault();
-    openModal('Terms', `
-      <p>Use at your own risk.</p>
-    `);
-  });
+
+document.getElementById('openTerms').addEventListener('click', (e) => {
+  e.preventDefault();
+  openModal('Terms', `
+    <p>Use at your own risk.</p>
+  `);
+});
   document.getElementById('openContact').addEventListener('click', (e) => {
     e.preventDefault();
     openModal('Contact', `
